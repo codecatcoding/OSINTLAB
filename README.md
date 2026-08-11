@@ -114,6 +114,15 @@ sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/codecatcoding/OSINT
 sudo certbot --nginx -d api.codecatcoding.com
 ```
 
+Free without VPS, using Cloudflare Tunnel:
+
+```bash
+cd ~/OSINTLAB
+bash Scripts/setup_cloudflare_tunnel.sh osintlab-api api.codecatcoding.com
+```
+
+Detailed guide: `deploy/README_CLOUDFLARE_TUNNEL.md`.
+
 ## Update
 
 ```bash

@@ -28,6 +28,17 @@ Finally enable HTTPS:
 sudo certbot --nginx -d api.codecatcoding.com
 ```
 
+## Free Without VPS
+
+If you do not have a VPS, use Cloudflare Tunnel instead. It publishes the Kali local API through HTTPS without opening ports:
+
+```bash
+cd ~/OSINTLAB
+bash Scripts/setup_cloudflare_tunnel.sh osintlab-api api.codecatcoding.com
+```
+
+See `deploy/README_CLOUDFLARE_TUNNEL.md`.
+
 ## Environment
 
 Edit:

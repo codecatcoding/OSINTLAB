@@ -13,13 +13,17 @@ if (!defined('ABSPATH')) {
 define('OSINTLAB_REPORT_PRODUCT_OPTION', 'osintlab_report_product_id');
 define('OSINTLAB_REPORT_API_OPTION', 'osintlab_report_api_base');
 define('OSINTLAB_REPORT_SECRET_OPTION', 'osintlab_report_secret');
+define('OSINTLAB_WIDGET_PAGE_SLUG_OPTION', 'osintlab_widget_page_slug');
 define('OSINTLAB_REPORT_COUPON_CODE', 'code2026');
+define('OSINTLAB_WIDGET_RAW_URL', 'https://raw.githubusercontent.com/codecatcoding/OSINTLAB/main/wordpress/elementor/osintlab-widget.html');
 
 register_activation_hook(__FILE__, 'osintlab_reports_activate');
 add_action('admin_init', 'osintlab_reports_ensure_product_and_coupon');
 add_action('admin_menu', 'osintlab_reports_admin_menu');
 add_action('admin_init', 'osintlab_reports_register_settings');
 add_action('rest_api_init', 'osintlab_reports_register_routes');
+add_shortcode('osintlab_widget', 'osintlab_reports_shortcode');
+add_filter('the_content', 'osintlab_reports_replace_osintlab_page_content', 99);
 add_filter('woocommerce_add_cart_item_data', 'osintlab_reports_add_cart_item_data', 10, 3);
 add_action('woocommerce_checkout_create_order', 'osintlab_reports_attach_report_to_order', 10, 2);
 add_action('woocommerce_thankyou', 'osintlab_reports_render_download_button', 20);
@@ -28,6 +32,10 @@ add_action('woocommerce_order_details_after_order_table', 'osintlab_reports_rend
 function osintlab_reports_activate() {
     if (!get_option(OSINTLAB_REPORT_API_OPTION)) {
         add_option(OSINTLAB_REPORT_API_OPTION, 'https://stock-anyway-believed-belief.trycloudflare.com');
+    }
+
+    if (!get_option(OSINTLAB_WIDGET_PAGE_SLUG_OPTION)) {
+        add_option(OSINTLAB_WIDGET_PAGE_SLUG_OPTION, 'osintlab');
     }
 
     osintlab_reports_ensure_product_and_coupon();
@@ -100,6 +108,11 @@ function osintlab_reports_register_settings() {
         'sanitize_callback' => 'sanitize_text_field',
         'default' => '',
     ));
+    register_setting('osintlab_reports', OSINTLAB_WIDGET_PAGE_SLUG_OPTION, array(
+        'type' => 'string',
+        'sanitize_callback' => 'sanitize_title',
+        'default' => 'osintlab',
+    ));
 }
 
 function osintlab_reports_settings_page() {
@@ -130,11 +143,51 @@ function osintlab_reports_settings_page() {
                         <p class="description">Opcional para pruebas. En produccion debe coincidir con OSINTLAB_REPORT_SECRET en la API.</p>
                     </td>
                 </tr>
+                <tr>
+                    <th scope="row"><label for="<?php echo esc_attr(OSINTLAB_WIDGET_PAGE_SLUG_OPTION); ?>">Slug de pagina widget</label></th>
+                    <td>
+                        <input class="regular-text" id="<?php echo esc_attr(OSINTLAB_WIDGET_PAGE_SLUG_OPTION); ?>" name="<?php echo esc_attr(OSINTLAB_WIDGET_PAGE_SLUG_OPTION); ?>" value="<?php echo esc_attr(get_option(OSINTLAB_WIDGET_PAGE_SLUG_OPTION, 'osintlab')); ?>" type="text">
+                        <p class="description">Por defecto reemplaza el contenido de <code>/osintlab/</code> con el widget operativo.</p>
+                    </td>
+                </tr>
             </table>
             <?php submit_button(); ?>
         </form>
     </div>
     <?php
+}
+
+function osintlab_reports_replace_osintlab_page_content($content) {
+    if (is_admin() || !is_main_query() || !in_the_loop()) {
+        return $content;
+    }
+
+    $slug = get_option(OSINTLAB_WIDGET_PAGE_SLUG_OPTION, 'osintlab');
+
+    if (!$slug || !is_page($slug)) {
+        return $content;
+    }
+
+    return osintlab_reports_widget_html();
+}
+
+function osintlab_reports_shortcode() {
+    return osintlab_reports_widget_html();
+}
+
+function osintlab_reports_widget_html() {
+    $widget = get_transient('osintlab_widget_html');
+
+    if (!$widget) {
+        $response = wp_remote_get(OSINTLAB_WIDGET_RAW_URL, array('timeout' => 15));
+
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
+            $widget = wp_remote_retrieve_body($response);
+            set_transient('osintlab_widget_html', $widget, HOUR_IN_SECONDS);
+        }
+    }
+
+    return $widget ?: '<p>Widget OSINT LAB no disponible.</p>';
 }
 
 function osintlab_reports_register_routes() {

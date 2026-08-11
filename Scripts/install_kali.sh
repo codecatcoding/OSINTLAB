@@ -26,9 +26,39 @@ source "$VENV_DIR/bin/activate"
 python -m pip install --upgrade pip
 python -m pip install -r "$PROJECT_ROOT/requirements.txt"
 
-if ! command -v phoneinfoga >/dev/null 2>&1; then
-  echo "PhoneInfoga no esta en PATH. Instalala manualmente o con tu gestor preferido."
-fi
+install_phoneinfoga() {
+  if command -v phoneinfoga >/dev/null 2>&1; then
+    return
+  fi
+
+  if [ ! -x "$TOOLS_DIR/phoneinfoga" ]; then
+    if ! command -v curl >/dev/null 2>&1; then
+      echo "curl no esta instalado; no se puede descargar PhoneInfoga automaticamente."
+      return
+    fi
+
+    echo "Instalando PhoneInfoga localmente..."
+    (
+      cd "$TOOLS_DIR"
+      bash <(curl -sSL https://raw.githubusercontent.com/sundowndev/phoneinfoga/master/support/scripts/install)
+    )
+  fi
+
+  if [ -x "$TOOLS_DIR/phoneinfoga" ]; then
+    cat > "$VENV_DIR/bin/phoneinfoga" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+exec "$PROJECT_ROOT/Herramientas/phoneinfoga" "$@"
+EOF
+    chmod +x "$VENV_DIR/bin/phoneinfoga"
+  fi
+}
+
+install_phoneinfoga
 
 clone_or_update() {
   local repo_url="$1"

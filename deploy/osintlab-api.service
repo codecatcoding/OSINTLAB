@@ -1,0 +1,16 @@
+[Unit]
+Description=OSINT LAB PRO API
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/OSINTLAB
+EnvironmentFile=/opt/OSINTLAB/.env
+ExecStart=/opt/OSINTLAB/venv/bin/uvicorn web.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+User=osintlab
+Group=osintlab
+
+[Install]
+WantedBy=multi-user.target

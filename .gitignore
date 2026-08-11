@@ -18,7 +18,9 @@ Configuracion/settings.json
 Herramientas/spiderfoot/
 Herramientas/recon-ng/
 Herramientas/theHarvester/
+Herramientas/phoneinfoga
 
 .env
 .env.*
+!.env.example
 *.log

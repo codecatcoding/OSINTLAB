@@ -1,4 +1,5 @@
 import os
+import time
 from collections.abc import Callable, Sequence
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
@@ -30,6 +31,9 @@ class SearchResponse(BaseModel):
 
 
 API_TOKEN = os.getenv("OSINTLAB_API_TOKEN", "")
+PUBLIC_MODE = os.getenv("OSINTLAB_PUBLIC_MODE", "false").lower() in {"1", "true", "yes"}
+RATE_LIMIT_REQUESTS = int(os.getenv("OSINTLAB_RATE_LIMIT_REQUESTS", "20"))
+RATE_LIMIT_WINDOW = int(os.getenv("OSINTLAB_RATE_LIMIT_WINDOW", "60"))
 ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(
@@ -38,6 +42,7 @@ ALLOWED_ORIGINS = [
     ).split(",")
     if origin.strip()
 ]
+RATE_LIMIT_BUCKETS: dict[str, list[float]] = {}
 
 app = FastAPI(title="OSINT LAB PRO API", version="1.0.0")
 app.add_middleware(
@@ -53,20 +58,30 @@ def require_access(
     request: Request,
     x_osintlab_token: str | None = Header(default=None),
 ) -> None:
-    """Protege la API con token o limita el uso sin token a localhost."""
+    """Protege la API con token, localhost o modo publico limitado."""
 
     if API_TOKEN:
         if x_osintlab_token != API_TOKEN:
-            raise HTTPException(status_code=401, detail="Token invalido.")
-        return
+            if not PUBLIC_MODE:
+                raise HTTPException(status_code=401, detail="Token invalido.")
+        else:
+            return
 
     client_host = request.client.host if request.client else ""
 
-    if client_host not in {"127.0.0.1", "::1", "localhost"}:
-        raise HTTPException(
-            status_code=403,
-            detail="Configura OSINTLAB_API_TOKEN antes de exponer la API publicamente.",
-        )
+    if client_host in {"127.0.0.1", "::1", "localhost"}:
+        return
+
+    origin = request.headers.get("origin", "")
+
+    if PUBLIC_MODE and origin in ALLOWED_ORIGINS:
+        _check_rate_limit(client_host)
+        return
+
+    raise HTTPException(
+        status_code=403,
+        detail="API no disponible publicamente. Configura token o OSINTLAB_PUBLIC_MODE.",
+    )
 
 
 @app.get("/health")
@@ -156,3 +171,15 @@ def _validate(value: str, validator: Callable[[str], bool], message: str) -> str
         raise HTTPException(status_code=422, detail=message)
 
     return target
+
+
+def _check_rate_limit(client_host: str) -> None:
+    now = time.monotonic()
+    window_start = now - RATE_LIMIT_WINDOW
+    bucket = [timestamp for timestamp in RATE_LIMIT_BUCKETS.get(client_host, []) if timestamp >= window_start]
+
+    if len(bucket) >= RATE_LIMIT_REQUESTS:
+        raise HTTPException(status_code=429, detail="Demasiadas busquedas. Intentalo mas tarde.")
+
+    bucket.append(now)
+    RATE_LIMIT_BUCKETS[client_host] = bucket

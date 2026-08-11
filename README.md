@@ -107,6 +107,13 @@ Recommended production setup:
 - Protect it with `OSINTLAB_API_TOKEN`.
 - Add rate limiting before exposing it publicly.
 
+VPS deployment files are included in `deploy/`.
+
+```bash
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/codecatcoding/OSINTLAB/main/deploy/install_vps.sh)"
+sudo certbot --nginx -d api.codecatcoding.com
+```
+
 ## Update
 
 ```bash

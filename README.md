@@ -1,6 +1,6 @@
 # OSINT LAB PRO
 
-Professional OSINT framework for Kali Linux, built as a modular Python terminal application.
+Professional OSINT framework for Linux and Kali Linux, built as a modular Python terminal application.
 
 ## Features
 
@@ -11,9 +11,49 @@ Professional OSINT framework for Kali Linux, built as a modular Python terminal 
 - Sherlock, Maigret, Holehe, PhoneInfoga, SpiderFoot, Recon-ng and theHarvester integration.
 - Automatic Markdown evidence capture for tool output.
 
-## Install On Kali
+## Install On Linux
+
+### 1. Install system dependencies
+
+Debian, Ubuntu, Kali and derivatives:
 
 ```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip
+```
+
+Optional but recommended on Kali:
+
+```bash
+sudo apt install -y libimage-exiftool-perl
+```
+
+### 2. Clone the project
+
+```bash
+git clone https://github.com/codecatcoding/OSINTLAB.git ~/OSINTLAB
+cd ~/OSINTLAB
+```
+
+### 3. Run the installer
+
+```bash
+bash Scripts/install_kali.sh
+```
+
+The installer creates the virtual environment, installs Python dependencies, downloads local tool integrations and prepares the command wrappers.
+
+### 4. Start OSINT LAB PRO
+
+```bash
+./venv/bin/python run.py
+```
+
+## Quick Kali Install
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip libimage-exiftool-perl
 git clone https://github.com/codecatcoding/OSINTLAB.git ~/OSINTLAB
 cd ~/OSINTLAB
 bash Scripts/install_kali.sh
@@ -33,6 +73,15 @@ Or:
 cd ~/OSINTLAB
 source venv/bin/activate
 python run.py
+```
+
+## Update
+
+```bash
+cd ~/OSINTLAB
+git pull
+bash Scripts/install_kali.sh
+./venv/bin/python run.py
 ```
 
 ## Project Layout

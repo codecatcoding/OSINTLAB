@@ -4,11 +4,13 @@ from collections.abc import Callable, Sequence
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
 from app.utils.dns_lookup import resolve_domain
 from app.utils.tool_manager import ToolManager
 from app.utils.validators import is_domain, is_email, is_phone, is_username
+from web.reports import ReportRequest, build_report_pdf, build_report_text
 
 
 class SearchRequest(BaseModel):
@@ -31,6 +33,7 @@ class SearchResponse(BaseModel):
 
 
 API_TOKEN = os.getenv("OSINTLAB_API_TOKEN", "")
+REPORT_SECRET = os.getenv("OSINTLAB_REPORT_SECRET", "")
 PUBLIC_MODE = os.getenv("OSINTLAB_PUBLIC_MODE", "false").lower() in {"1", "true", "yes"}
 RATE_LIMIT_REQUESTS = int(os.getenv("OSINTLAB_RATE_LIMIT_REQUESTS", "20"))
 RATE_LIMIT_WINDOW = int(os.getenv("OSINTLAB_RATE_LIMIT_WINDOW", "60"))
@@ -156,6 +159,27 @@ def domain_spiderfoot(payload: SearchRequest) -> SearchResponse:
     return _run("SpiderFoot", ["spiderfoot", "-s", target, "-u", "passive", "-o", "tab", "-q"], target, 300)
 
 
+@app.post("/api/reports/preview", dependencies=[Depends(require_access)])
+def reports_preview(payload: ReportRequest) -> dict[str, object]:
+    return {"ok": True, "report": build_report_text(payload)}
+
+
+@app.post("/api/reports/pdf")
+def reports_pdf(
+    payload: ReportRequest,
+    request: Request,
+    x_osintlab_report_secret: str | None = Header(default=None),
+) -> Response:
+    _require_report_download_access(request, x_osintlab_report_secret)
+    pdf = build_report_pdf(payload)
+    filename = "osintlab-informe.pdf"
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
 def _run(tool: str, command: Sequence[str], target: str, timeout: int) -> SearchResponse:
     result = ToolManager.ejecutar_captura(command, timeout=timeout)
     stdout = _clean_tool_output(result.stdout)
@@ -191,6 +215,25 @@ def _check_rate_limit(client_host: str) -> None:
 
     bucket.append(now)
     RATE_LIMIT_BUCKETS[client_host] = bucket
+
+
+def _require_report_download_access(request: Request, provided_secret: str | None) -> None:
+    client_host = request.client.host if request.client else ""
+
+    if REPORT_SECRET and provided_secret == REPORT_SECRET:
+        return
+
+    if not REPORT_SECRET and client_host in {"127.0.0.1", "::1", "localhost"}:
+        return
+
+    if not REPORT_SECRET and PUBLIC_MODE:
+        origin = request.headers.get("origin", "")
+
+        if origin in ALLOWED_ORIGINS:
+            _check_rate_limit(client_host)
+            return
+
+    raise HTTPException(status_code=403, detail="Descarga no autorizada.")
 
 
 def _clean_tool_output(output: str) -> str:

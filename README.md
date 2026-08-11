@@ -123,6 +123,22 @@ bash Scripts/setup_cloudflare_tunnel.sh osintlab-api api.codecatcoding.com
 
 Detailed guide: `deploy/README_CLOUDFLARE_TUNNEL.md`.
 
+## Paid PDF Reports
+
+The repository includes a WordPress/WooCommerce plugin for paid reports:
+
+```text
+wordpress/osintlab-reports/
+```
+
+It creates:
+
+- Product: `Informe OSINT LAB PRO`
+- Price: `10 EUR`
+- Coupon: `code2026` with 100% discount for that product
+
+The Elementor widget can collect search results, send them to WooCommerce checkout and unlock a PDF report after payment.
+
 ## Update
 
 ```bash

@@ -1,0 +1,844 @@
+<section class="cc-osintlab" data-api-base="https://stock-anyway-believed-belief.trycloudflare.com" data-api-token="" data-report-endpoint="/wp-json/osintlab/v1/report/checkout" data-report-price="10" data-report-currency="EUR" aria-labelledby="cc-osintlab-title">
+  <style>
+    .cc-osintlab,
+    .cc-osintlab * {
+      box-sizing: border-box;
+    }
+
+    .cc-osintlab {
+      --bg: #0b0f14;
+      --panel: #111820;
+      --panel-soft: #151f2a;
+      --text: #eef4f8;
+      --muted: #9fb0bf;
+      --line: #263442;
+      --cyan: #42d9c8;
+      --green: #7bd66f;
+      --blue: #6aa8ff;
+      --orange: #ffb15c;
+      --red: #ff6464;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        linear-gradient(135deg, rgba(66, 217, 200, 0.12), transparent 35%),
+        linear-gradient(315deg, rgba(255, 177, 92, 0.10), transparent 30%),
+        var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .cc-osintlab a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .cc-osintlab__wrap {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: clamp(28px, 5vw, 64px);
+    }
+
+    .cc-osintlab__hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+      gap: clamp(24px, 4vw, 48px);
+      align-items: center;
+    }
+
+    .cc-osintlab__eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 16px;
+      color: var(--cyan);
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .cc-osintlab__dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 18px rgba(123, 214, 111, 0.75);
+      flex: 0 0 auto;
+    }
+
+    .cc-osintlab h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(2.35rem, 6vw, 5rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .cc-osintlab__lead {
+      margin: 22px 0 0;
+      max-width: 680px;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.18rem);
+      line-height: 1.7;
+    }
+
+    .cc-osintlab__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .cc-osintlab__button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 12px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      font-weight: 800;
+      font-size: 0.95rem;
+      transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .cc-osintlab__button:hover {
+      transform: translateY(-1px);
+      border-color: var(--cyan);
+    }
+
+    .cc-osintlab__button--primary {
+      color: #06110f;
+      background: var(--cyan);
+      border-color: var(--cyan);
+    }
+
+    .cc-osintlab__button--ghost {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .cc-osintlab__terminal {
+      background: rgba(7, 10, 14, 0.92);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .cc-osintlab__terminalbar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 12px 14px;
+      background: #101720;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cc-osintlab__light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .cc-osintlab__light:nth-child(2) {
+      background: var(--orange);
+    }
+
+    .cc-osintlab__light:nth-child(3) {
+      background: var(--green);
+    }
+
+    .cc-osintlab__screen {
+      padding: 20px;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: clamp(0.78rem, 1.6vw, 0.95rem);
+      line-height: 1.65;
+      color: #d7e7ef;
+      overflow-x: auto;
+    }
+
+    .cc-osintlab__prompt {
+      color: var(--green);
+    }
+
+    .cc-osintlab__ok {
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    .cc-osintlab__cyan {
+      color: var(--cyan);
+    }
+
+    .cc-osintlab__grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: clamp(30px, 5vw, 56px);
+    }
+
+    .cc-osintlab__card {
+      min-height: 132px;
+      padding: 18px;
+      background: rgba(17, 24, 32, 0.82);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .cc-osintlab__card strong {
+      display: block;
+      margin-bottom: 10px;
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .cc-osintlab__card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+    }
+
+    .cc-osintlab__install {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(280px, 1.15fr);
+      gap: 22px;
+      align-items: stretch;
+      margin-top: 18px;
+      padding-top: clamp(30px, 5vw, 54px);
+    }
+
+    .cc-osintlab__install-copy {
+      padding: 24px;
+      background: rgba(21, 31, 42, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .cc-osintlab__install-copy h2 {
+      margin: 0 0 12px;
+      font-size: clamp(1.35rem, 3vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    .cc-osintlab__install-copy p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .cc-osintlab__code {
+      margin: 0;
+      padding: 22px;
+      background: #070a0e;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow-x: auto;
+      color: #d7e7ef;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: clamp(0.78rem, 1.4vw, 0.92rem);
+      line-height: 1.7;
+      white-space: pre;
+    }
+
+    .cc-osintlab__tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .cc-osintlab__tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 6px 10px;
+      color: #cfe1ea;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .cc-osintlab__lab {
+      margin-top: clamp(30px, 5vw, 56px);
+      padding: 24px;
+      background: rgba(17, 24, 32, 0.82);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .cc-osintlab__lab-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .cc-osintlab__lab h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      letter-spacing: 0;
+    }
+
+    .cc-osintlab__lab p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .cc-osintlab__status {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .cc-osintlab__search-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .cc-osintlab__search-card {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+      background: rgba(7, 10, 14, 0.56);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .cc-osintlab__search-card label {
+      color: var(--text);
+      font-size: 0.92rem;
+      font-weight: 800;
+    }
+
+    .cc-osintlab__field {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      color: var(--text);
+      background: #070a0e;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+      font: inherit;
+    }
+
+    .cc-osintlab__field:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(66, 217, 200, 0.16);
+    }
+
+    .cc-osintlab__button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .cc-osintlab__run {
+      min-height: 38px;
+      padding: 9px 12px;
+      color: #06110f;
+      background: var(--cyan);
+      border: 1px solid var(--cyan);
+      border-radius: 6px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 900;
+    }
+
+    .cc-osintlab__run[data-secondary="true"] {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--line);
+    }
+
+    .cc-osintlab__run:disabled {
+      cursor: progress;
+      opacity: 0.65;
+    }
+
+    .cc-osintlab__result {
+      margin-top: 16px;
+      padding: 16px;
+      min-height: 180px;
+      max-height: 420px;
+      overflow: auto;
+      background: #070a0e;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #d7e7ef;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.86rem;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+
+    .cc-osintlab__reportbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(7, 10, 14, 0.56);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .cc-osintlab__report-status {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    .cc-osintlab__report-preview {
+      margin-top: 12px;
+      padding: 14px;
+      max-height: 260px;
+      overflow: auto;
+      background: #070a0e;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: #d7e7ef;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .cc-osintlab__notice {
+      margin-top: 12px;
+      color: var(--orange);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 880px) {
+      .cc-osintlab__hero,
+      .cc-osintlab__install {
+        grid-template-columns: 1fr;
+      }
+
+      .cc-osintlab__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .cc-osintlab__search-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cc-osintlab__lab-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .cc-osintlab__wrap {
+        padding: 24px 16px;
+      }
+
+      .cc-osintlab__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cc-osintlab__button {
+        width: 100%;
+      }
+
+      .cc-osintlab__run {
+        width: 100%;
+      }
+
+      .cc-osintlab__reportbar .cc-osintlab__run {
+        width: 100%;
+      }
+    }
+  </style>
+
+  <div class="cc-osintlab__wrap">
+    <div class="cc-osintlab__hero">
+      <div>
+        <p class="cc-osintlab__eyebrow"><span class="cc-osintlab__dot"></span> Framework OSINT para Linux</p>
+        <h1 id="cc-osintlab-title">OSINT LAB PRO</h1>
+        <p class="cc-osintlab__lead">
+          Una herramienta profesional de investigacion OSINT desde terminal, creada por CodeCatCoding para Kali Linux y sistemas Linux compatibles.
+          Integra busqueda de usuarios, telefonos, correos, dominios, metadatos, evidencias e informes.
+        </p>
+        <div class="cc-osintlab__actions">
+          <a class="cc-osintlab__button cc-osintlab__button--primary" href="https://github.com/codecatcoding/OSINTLAB" target="_blank" rel="noopener">Ver en GitHub</a>
+          <a class="cc-osintlab__button cc-osintlab__button--ghost" href="#cc-osintlab-install">Instalacion Linux</a>
+        </div>
+      </div>
+
+      <div class="cc-osintlab__terminal" aria-label="Vista previa de terminal OSINT LAB PRO">
+        <div class="cc-osintlab__terminalbar">
+          <span class="cc-osintlab__light"></span>
+          <span class="cc-osintlab__light"></span>
+          <span class="cc-osintlab__light"></span>
+        </div>
+        <div class="cc-osintlab__screen">
+          <span class="cc-osintlab__prompt">$</span> ./venv/bin/python run.py<br>
+          <span class="cc-osintlab__cyan">OSINT LAB PRO</span><br>
+          Professional OSINT Framework<br><br>
+          Python ........ <span class="cc-osintlab__ok">OK</span><br>
+          Git ........... <span class="cc-osintlab__ok">OK</span><br>
+          Sherlock ...... <span class="cc-osintlab__ok">OK</span><br>
+          Maigret ....... <span class="cc-osintlab__ok">OK</span><br>
+          PhoneInfoga ... <span class="cc-osintlab__ok">OK</span><br>
+          SpiderFoot .... <span class="cc-osintlab__ok">OK</span><br>
+          Recon-ng ...... <span class="cc-osintlab__ok">OK</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cc-osintlab__grid" aria-label="Funciones principales">
+      <div class="cc-osintlab__card">
+        <strong>Investigacion modular</strong>
+        <p>Usuarios, correos, telefonos, dominios, redes sociales y metadatos desde un menu profesional.</p>
+      </div>
+      <div class="cc-osintlab__card">
+        <strong>Evidencias automaticas</strong>
+        <p>Cada ejecucion puede guardar resultados en Markdown para revision posterior.</p>
+      </div>
+      <div class="cc-osintlab__card">
+        <strong>Informes</strong>
+        <p>Genera informes basicos o consolidados desde evidencias del laboratorio.</p>
+      </div>
+      <div class="cc-osintlab__card">
+        <strong>Listo para Kali</strong>
+        <p>Incluye instalador para reconstruir el entorno y preparar integraciones locales.</p>
+      </div>
+    </div>
+
+    <div class="cc-osintlab__tools" aria-label="Herramientas integradas">
+      <span class="cc-osintlab__tag">Sherlock</span>
+      <span class="cc-osintlab__tag">Maigret</span>
+      <span class="cc-osintlab__tag">Holehe</span>
+      <span class="cc-osintlab__tag">PhoneInfoga</span>
+      <span class="cc-osintlab__tag">theHarvester</span>
+      <span class="cc-osintlab__tag">SpiderFoot</span>
+      <span class="cc-osintlab__tag">Recon-ng</span>
+      <span class="cc-osintlab__tag">ExifTool</span>
+    </div>
+
+    <div class="cc-osintlab__lab" aria-label="Busquedas OSINT desde la web">
+      <div class="cc-osintlab__lab-head">
+        <div>
+          <h2>Consola web OSINT</h2>
+          <p>Ejecuta busquedas conectadas a tu API OSINT LAB PRO. Configura <code>data-api-base</code> en el bloque principal cuando tengas la API publicada.</p>
+        </div>
+        <span class="cc-osintlab__status" data-osint-status>API sin comprobar</span>
+      </div>
+
+      <div class="cc-osintlab__search-grid">
+        <form class="cc-osintlab__search-card" data-osint-form>
+          <label for="cc-osint-user">Usuario</label>
+          <input class="cc-osintlab__field" id="cc-osint-user" name="target" type="text" placeholder="usuario" autocomplete="off" required>
+          <div class="cc-osintlab__button-row">
+            <button class="cc-osintlab__run" type="submit" data-endpoint="/api/users/sherlock">Sherlock</button>
+            <button class="cc-osintlab__run" type="submit" data-secondary="true" data-endpoint="/api/users/maigret">Maigret</button>
+          </div>
+        </form>
+
+        <form class="cc-osintlab__search-card" data-osint-form>
+          <label for="cc-osint-email">Correo</label>
+          <input class="cc-osintlab__field" id="cc-osint-email" name="target" type="email" placeholder="nombre@dominio.com" autocomplete="off" required>
+          <div class="cc-osintlab__button-row">
+            <button class="cc-osintlab__run" type="submit" data-endpoint="/api/email/holehe">Holehe</button>
+          </div>
+        </form>
+
+        <form class="cc-osintlab__search-card" data-osint-form>
+          <label for="cc-osint-phone">Telefono</label>
+          <input class="cc-osintlab__field" id="cc-osint-phone" name="target" type="text" placeholder="+34600000000" autocomplete="off" required>
+          <div class="cc-osintlab__button-row">
+            <button class="cc-osintlab__run" type="submit" data-endpoint="/api/phone/phoneinfoga">PhoneInfoga</button>
+          </div>
+        </form>
+
+        <form class="cc-osintlab__search-card" data-osint-form>
+          <label for="cc-osint-domain">Dominio</label>
+          <input class="cc-osintlab__field" id="cc-osint-domain" name="target" type="text" placeholder="example.com" autocomplete="off" required>
+          <div class="cc-osintlab__button-row">
+            <button class="cc-osintlab__run" type="submit" data-endpoint="/api/domain/dns">DNS</button>
+            <button class="cc-osintlab__run" type="submit" data-secondary="true" data-endpoint="/api/domain/theharvester">theHarvester</button>
+            <button class="cc-osintlab__run" type="submit" data-secondary="true" data-endpoint="/api/domain/spiderfoot">SpiderFoot</button>
+          </div>
+        </form>
+      </div>
+
+      <pre class="cc-osintlab__result" data-osint-result>Selecciona una busqueda para ver los resultados aqui.</pre>
+      <div class="cc-osintlab__reportbar" aria-label="Informe OSINT">
+        <button class="cc-osintlab__run" type="button" data-osint-add-report disabled>Agregar info a informe</button>
+        <button class="cc-osintlab__run" type="button" data-secondary="true" data-osint-generate-report>Generar informe</button>
+        <button class="cc-osintlab__run" type="button" data-secondary="true" data-osint-clear-report>Limpiar</button>
+        <span class="cc-osintlab__report-status" data-osint-report-count>0 resultados en el informe</span>
+      </div>
+      <pre class="cc-osintlab__report-preview" data-osint-report-preview hidden></pre>
+      <p class="cc-osintlab__notice">
+        Seguridad: no expongas esta API sin HTTPS, token, autenticacion y limites de uso. Utiliza solo objetivos propios o autorizados.
+      </p>
+    </div>
+
+    <div class="cc-osintlab__install" id="cc-osintlab-install">
+      <div class="cc-osintlab__install-copy">
+        <h2>Instalacion rapida</h2>
+        <p>
+          Copia estos comandos en Kali Linux o en una distribucion basada en Debian. El instalador crea el entorno virtual, instala dependencias y prepara las herramientas del laboratorio.
+        </p>
+      </div>
+      <pre class="cc-osintlab__code"><code>sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip libimage-exiftool-perl
+git clone https://github.com/codecatcoding/OSINTLAB.git ~/OSINTLAB
+cd ~/OSINTLAB
+bash Scripts/install_kali.sh
+./venv/bin/python run.py</code></pre>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const root = document.currentScript.closest(".cc-osintlab");
+      const apiBase = (root.dataset.apiBase || "").replace(/\/$/, "");
+      const apiToken = root.dataset.apiToken || "";
+      const reportEndpoint = root.dataset.reportEndpoint || "/wp-json/osintlab/v1/report/checkout";
+      const reportPrice = root.dataset.reportPrice || "10";
+      const reportCurrency = root.dataset.reportCurrency || "EUR";
+      const resultBox = root.querySelector("[data-osint-result]");
+      const status = root.querySelector("[data-osint-status]");
+      const forms = root.querySelectorAll("[data-osint-form]");
+      const addReportButton = root.querySelector("[data-osint-add-report]");
+      const generateReportButton = root.querySelector("[data-osint-generate-report]");
+      const clearReportButton = root.querySelector("[data-osint-clear-report]");
+      const reportCount = root.querySelector("[data-osint-report-count]");
+      const reportPreview = root.querySelector("[data-osint-report-preview]");
+      const storageKey = "cc_osintlab_report_items";
+      let lastSearch = null;
+      let reportItems = loadReportItems();
+
+      function writeResult(text) {
+        resultBox.textContent = text;
+      }
+
+      function setStatus(text, color) {
+        status.textContent = text;
+        status.style.color = color || "";
+        status.style.borderColor = color || "";
+      }
+
+      function loadReportItems() {
+        try {
+          const stored = JSON.parse(window.localStorage.getItem(storageKey) || "[]");
+          return Array.isArray(stored) ? stored : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveReportItems() {
+        window.localStorage.setItem(storageKey, JSON.stringify(reportItems));
+        updateReportCount();
+      }
+
+      function updateReportCount() {
+        const count = reportItems.length;
+        reportCount.textContent = count === 1 ? "1 resultado en el informe" : count + " resultados en el informe";
+      }
+
+      function reportSubject() {
+        return reportItems[0] ? reportItems[0].target : "";
+      }
+
+      function endpointUrl(path) {
+        if (/^https?:\/\//i.test(path)) return path;
+        return window.location.origin + path;
+      }
+
+      function buildReportPreview() {
+        const lines = [
+          "Informe OSINT LAB PRO",
+          "",
+          "Objetivo principal: " + (reportSubject() || "No especificado"),
+          "Consultas incluidas: " + reportItems.length,
+          "",
+          "Resultados incluidos:"
+        ];
+
+        reportItems.forEach((item, index) => {
+          lines.push("");
+          lines.push((index + 1) + ". " + item.tool + " - " + item.target);
+          lines.push("Estado: " + (item.ok ? "OK" : "ERROR"));
+          const findings = item.results && item.results.length ? item.results : (item.stdout || "").split("\n").filter((line) => line.trim().startsWith("[+]"));
+          findings.slice(0, 8).forEach((finding) => lines.push("- " + finding.trim()));
+        });
+
+        lines.push("");
+        lines.push("La descarga del PDF se habilita tras completar el pago de " + reportPrice + " " + reportCurrency + ".");
+        return lines.join("\n");
+      }
+
+      async function checkApi() {
+        if (!apiBase) {
+          setStatus("API no configurada", "#ffb15c");
+          return;
+        }
+
+        try {
+          const response = await fetch(apiBase + "/health", { method: "GET" });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          setStatus("API conectada", "#7bd66f");
+        } catch (error) {
+          setStatus("API no disponible", "#ff6464");
+        }
+      }
+
+      async function runSearch(form, submitter) {
+        const endpoint = submitter.dataset.endpoint;
+        const target = new FormData(form).get("target");
+
+        if (!apiBase) {
+          writeResult("API no configurada. Edita data-api-base en el section principal, por ejemplo: https://api.codecatcoding.com");
+          return;
+        }
+
+        const buttons = root.querySelectorAll(".cc-osintlab__run");
+        buttons.forEach((button) => button.disabled = true);
+        writeResult("Ejecutando busqueda...\n\nObjetivo: " + target + "\nEndpoint: " + endpoint);
+
+        try {
+          const headers = { "Content-Type": "application/json" };
+          if (apiToken) headers["X-OSINTLAB-TOKEN"] = apiToken;
+
+          const response = await fetch(apiBase + endpoint, {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ target })
+          });
+
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(data.detail || "HTTP " + response.status);
+          }
+
+          const output = [
+            "Herramienta: " + data.tool,
+            "Objetivo: " + data.target,
+            "Estado: " + (data.ok ? "OK" : "ERROR"),
+            "Codigo: " + data.returncode,
+            "",
+            data.results && data.results.length ? "Resultados:\n" + data.results.join("\n") + "\n" : "",
+            data.stdout ? "STDOUT:\n" + data.stdout : "",
+            data.stderr ? "\nSTDERR:\n" + data.stderr : ""
+          ].filter(Boolean).join("\n");
+
+          lastSearch = {
+            tool: data.tool || "OSINT",
+            target: data.target || target,
+            endpoint,
+            ok: Boolean(data.ok),
+            returncode: Number(data.returncode || 0),
+            stdout: data.stdout || "",
+            stderr: data.stderr || "",
+            results: Array.isArray(data.results) ? data.results : [],
+            captured_at: new Date().toISOString()
+          };
+          addReportButton.disabled = false;
+          writeResult(output || "Sin salida.");
+        } catch (error) {
+          lastSearch = null;
+          addReportButton.disabled = true;
+          writeResult("Error ejecutando la busqueda:\n" + error.message);
+        } finally {
+          buttons.forEach((button) => button.disabled = false);
+        }
+      }
+
+      function addCurrentSearchToReport() {
+        if (!lastSearch) {
+          writeResult("No hay una busqueda valida para agregar al informe.");
+          return;
+        }
+
+        reportItems.push(lastSearch);
+        saveReportItems();
+        reportPreview.hidden = false;
+        reportPreview.textContent = buildReportPreview();
+      }
+
+      async function generatePaidReport() {
+        if (!reportItems.length) {
+          writeResult("Agrega al menos una busqueda al informe antes de generarlo.");
+          return;
+        }
+
+        generateReportButton.disabled = true;
+        reportPreview.hidden = false;
+        reportPreview.textContent = buildReportPreview() + "\n\nPreparando pago seguro...";
+
+        try {
+          const response = await fetch(endpointUrl(reportEndpoint), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: "Informe OSINT LAB PRO",
+              subject: reportSubject(),
+              items: reportItems
+            })
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok || !data.checkout_url) {
+            throw new Error(data.message || data.detail || "No se pudo iniciar el checkout.");
+          }
+
+          window.location.href = data.checkout_url;
+        } catch (error) {
+          reportPreview.textContent = buildReportPreview() + "\n\nError preparando el pago:\n" + error.message;
+        } finally {
+          generateReportButton.disabled = false;
+        }
+      }
+
+      function clearReport() {
+        reportItems = [];
+        saveReportItems();
+        reportPreview.hidden = true;
+        reportPreview.textContent = "";
+      }
+
+      forms.forEach((form) => {
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          runSearch(form, event.submitter);
+        });
+      });
+
+      addReportButton.addEventListener("click", addCurrentSearchToReport);
+      generateReportButton.addEventListener("click", generatePaidReport);
+      clearReportButton.addEventListener("click", clearReport);
+      updateReportCount();
+      checkApi();
+    })();
+  </script>
+</section>

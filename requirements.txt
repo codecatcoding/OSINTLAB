@@ -9,3 +9,4 @@ holehe
 fastapi
 uvicorn
 pydantic
+reportlab

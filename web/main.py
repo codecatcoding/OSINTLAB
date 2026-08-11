@@ -43,6 +43,11 @@ ALLOWED_ORIGINS = [
     if origin.strip()
 ]
 RATE_LIMIT_BUCKETS: dict[str, list[float]] = {}
+NOISE_LINE_PREFIXES = {
+    "twitter :",
+    "github :",
+    "for btc",
+}
 
 app = FastAPI(title="OSINT LAB PRO API", version="1.0.0")
 app.add_middleware(
@@ -153,14 +158,17 @@ def domain_spiderfoot(payload: SearchRequest) -> SearchResponse:
 
 def _run(tool: str, command: Sequence[str], target: str, timeout: int) -> SearchResponse:
     result = ToolManager.ejecutar_captura(command, timeout=timeout)
+    stdout = _clean_tool_output(result.stdout)
+    stderr = _clean_tool_output(result.stderr)
+
     return SearchResponse(
         ok=result.ok,
         tool=tool,
         target=target,
         command=result.command,
         returncode=result.returncode,
-        stdout=result.stdout,
-        stderr=result.stderr,
+        stdout=stdout,
+        stderr=stderr,
     )
 
 
@@ -183,3 +191,19 @@ def _check_rate_limit(client_host: str) -> None:
 
     bucket.append(now)
     RATE_LIMIT_BUCKETS[client_host] = bucket
+
+
+def _clean_tool_output(output: str) -> str:
+    """Elimina banners promocionales que no son resultados OSINT."""
+
+    clean_lines = []
+
+    for line in output.splitlines():
+        normalized = line.strip().lower()
+
+        if any(normalized.startswith(prefix) for prefix in NOISE_LINE_PREFIXES):
+            continue
+
+        clean_lines.append(line)
+
+    return "\n".join(clean_lines).strip()

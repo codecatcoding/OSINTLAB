@@ -19,6 +19,7 @@ Herramientas/spiderfoot/
 Herramientas/recon-ng/
 Herramientas/theHarvester/
 Herramientas/phoneinfoga
+Herramientas/cloudflared
 
 .env
 .env.*

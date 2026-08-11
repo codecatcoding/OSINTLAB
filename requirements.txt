@@ -6,3 +6,6 @@ ExifRead
 sherlock-project
 maigret
 holehe
+fastapi
+uvicorn
+pydantic

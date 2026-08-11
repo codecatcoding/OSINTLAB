@@ -1,14 +1,9 @@
-import socket
-import json
-from urllib.parse import urlencode
-from urllib.request import urlopen
-
-import dns.resolver
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
 from app.ui.navigation import pausar
+from app.utils.dns_lookup import resolve_domain
 from app.utils.evidence_manager import EvidenceManager
 from app.utils.investigation_runner import run_tool_and_save
 from app.utils.validators import is_domain
@@ -58,7 +53,7 @@ def _resolver_dns_basico() -> None:
     if dominio is None:
         return
 
-    addresses, error_text = _resolver_addresses(dominio)
+    addresses, error_text = resolve_domain(dominio)
 
     lines = [f"# Resolucion DNS basica: {dominio}", ""]
     lines.extend(f"- {address}" for address in addresses)
@@ -117,51 +112,3 @@ def _pedir_dominio() -> str | None:
         return None
 
     return dominio
-
-
-def _resolver_addresses(dominio: str) -> tuple[list[str], str]:
-    try:
-        addresses = sorted({info[4][0] for info in socket.getaddrinfo(dominio, None)})
-    except socket.gaierror as error:
-        socket_error = str(error)
-    else:
-        return addresses, ""
-
-    resolver = dns.resolver.Resolver(configure=False)
-    resolver.nameservers = ["1.1.1.1", "8.8.8.8"]
-    resolver.timeout = 3
-    resolver.lifetime = 6
-
-    try:
-        answers = resolver.resolve(dominio, "A")
-    except Exception as error:
-        doh_addresses, doh_error = _resolver_doh(dominio)
-
-        if doh_addresses:
-            return doh_addresses, ""
-
-        return [], f"{socket_error}; fallback DNS: {error}; fallback DoH: {doh_error}"
-
-    return sorted({answer.address for answer in answers}), ""
-
-
-def _resolver_doh(dominio: str) -> tuple[list[str], str]:
-    query = urlencode({"name": dominio, "type": "A"})
-    url = f"https://dns.google/resolve?{query}"
-
-    try:
-        with urlopen(url, timeout=8) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-    except Exception as error:
-        return [], str(error)
-
-    answers = payload.get("Answer", [])
-    addresses = sorted(
-        {
-            answer.get("data", "")
-            for answer in answers
-            if answer.get("type") == 1 and answer.get("data")
-        }
-    )
-
-    return addresses, ""

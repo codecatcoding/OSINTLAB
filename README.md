@@ -75,6 +75,38 @@ source venv/bin/activate
 python run.py
 ```
 
+## Web API
+
+OSINT LAB PRO also includes a local FastAPI backend that can be connected to a website widget.
+
+Local development:
+
+```bash
+cd ~/OSINTLAB
+./venv/bin/python run_web.py
+```
+
+The API starts at:
+
+```text
+http://127.0.0.1:8000
+```
+
+Public deployment should always use a token and HTTPS:
+
+```bash
+export OSINTLAB_API_TOKEN="change-this-token"
+export OSINTLAB_ALLOWED_ORIGINS="https://codecatcoding.com"
+./venv/bin/uvicorn web.main:app --host 127.0.0.1 --port 8000
+```
+
+Recommended production setup:
+
+- Run the API behind Nginx or another reverse proxy.
+- Expose it as `https://api.codecatcoding.com`.
+- Protect it with `OSINTLAB_API_TOKEN`.
+- Add rate limiting before exposing it publicly.
+
 ## Update
 
 ```bash

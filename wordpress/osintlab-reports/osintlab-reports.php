@@ -15,9 +15,11 @@ define('OSINTLAB_REPORT_API_OPTION', 'osintlab_report_api_base');
 define('OSINTLAB_REPORT_SECRET_OPTION', 'osintlab_report_secret');
 define('OSINTLAB_WIDGET_PAGE_SLUG_OPTION', 'osintlab_widget_page_slug');
 define('OSINTLAB_REPORT_COUPON_CODE', 'code2026');
+define('OSINTLAB_REPORT_API_DEFAULT', 'https://cakes-storm-migration-singles.trycloudflare.com');
 define('OSINTLAB_WIDGET_RAW_URL', 'https://raw.githubusercontent.com/codecatcoding/OSINTLAB/main/wordpress/elementor/osintlab-widget.html');
 
 register_activation_hook(__FILE__, 'osintlab_reports_activate');
+add_action('init', 'osintlab_reports_refresh_runtime_settings');
 add_action('admin_init', 'osintlab_reports_ensure_product_and_coupon');
 add_action('admin_menu', 'osintlab_reports_admin_menu');
 add_action('admin_init', 'osintlab_reports_register_settings');
@@ -31,7 +33,7 @@ add_action('woocommerce_order_details_after_order_table', 'osintlab_reports_rend
 
 function osintlab_reports_activate() {
     if (!get_option(OSINTLAB_REPORT_API_OPTION)) {
-        add_option(OSINTLAB_REPORT_API_OPTION, 'https://stock-anyway-believed-belief.trycloudflare.com');
+        add_option(OSINTLAB_REPORT_API_OPTION, OSINTLAB_REPORT_API_DEFAULT);
     }
 
     if (!get_option(OSINTLAB_WIDGET_PAGE_SLUG_OPTION)) {
@@ -68,6 +70,18 @@ function osintlab_reports_ensure_product_and_coupon() {
     osintlab_reports_ensure_coupon($product_id);
 }
 
+function osintlab_reports_refresh_runtime_settings() {
+    if (get_option(OSINTLAB_REPORT_API_OPTION) !== OSINTLAB_REPORT_API_DEFAULT) {
+        update_option(OSINTLAB_REPORT_API_OPTION, OSINTLAB_REPORT_API_DEFAULT);
+    }
+
+    $widget = get_transient('osintlab_widget_html');
+
+    if ($widget && strpos($widget, OSINTLAB_REPORT_API_DEFAULT) === false) {
+        delete_transient('osintlab_widget_html');
+    }
+}
+
 function osintlab_reports_ensure_coupon($product_id) {
     if (!class_exists('WC_Coupon') || !$product_id) {
         return;
@@ -101,7 +115,7 @@ function osintlab_reports_register_settings() {
     register_setting('osintlab_reports', OSINTLAB_REPORT_API_OPTION, array(
         'type' => 'string',
         'sanitize_callback' => 'esc_url_raw',
-        'default' => 'https://stock-anyway-believed-belief.trycloudflare.com',
+        'default' => OSINTLAB_REPORT_API_DEFAULT,
     ));
     register_setting('osintlab_reports', OSINTLAB_REPORT_SECRET_OPTION, array(
         'type' => 'string',

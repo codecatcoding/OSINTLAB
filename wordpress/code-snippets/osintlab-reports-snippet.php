@@ -2,6 +2,7 @@ const OSINTLAB_REPORT_PRODUCT_OPTION = 'osintlab_report_product_id';
 const OSINTLAB_REPORT_API_OPTION = 'osintlab_report_api_base';
 const OSINTLAB_REPORT_SECRET_OPTION = 'osintlab_report_secret';
 const OSINTLAB_REPORT_COUPON_CODE = 'code2026';
+const OSINTLAB_REPORT_API_DEFAULT = 'https://cakes-storm-migration-singles.trycloudflare.com';
 const OSINTLAB_WIDGET_RAW_URL = 'https://raw.githubusercontent.com/codecatcoding/OSINTLAB/main/wordpress/elementor/osintlab-widget.html';
 
 add_action('init', 'osintlab_snippet_bootstrap');
@@ -13,8 +14,14 @@ add_action('woocommerce_thankyou', 'osintlab_snippet_download_button', 20);
 add_action('woocommerce_order_details_after_order_table', 'osintlab_snippet_download_button_for_order', 20);
 
 function osintlab_snippet_bootstrap() {
-    if (!get_option(OSINTLAB_REPORT_API_OPTION)) {
-        update_option(OSINTLAB_REPORT_API_OPTION, 'https://stock-anyway-believed-belief.trycloudflare.com');
+    if (get_option(OSINTLAB_REPORT_API_OPTION) !== OSINTLAB_REPORT_API_DEFAULT) {
+        update_option(OSINTLAB_REPORT_API_OPTION, OSINTLAB_REPORT_API_DEFAULT);
+    }
+
+    $widget = get_transient('osintlab_widget_html');
+
+    if ($widget && strpos($widget, OSINTLAB_REPORT_API_DEFAULT) === false) {
+        delete_transient('osintlab_widget_html');
     }
 
     osintlab_snippet_product_and_coupon();
@@ -224,7 +231,7 @@ function osintlab_snippet_download_pdf(WP_REST_Request $request) {
         return new WP_Error('missing_report', 'No se encontro el contenido del informe.', array('status' => 404));
     }
 
-    $api_base = untrailingslashit(get_option(OSINTLAB_REPORT_API_OPTION, 'https://stock-anyway-believed-belief.trycloudflare.com'));
+    $api_base = untrailingslashit(get_option(OSINTLAB_REPORT_API_OPTION, OSINTLAB_REPORT_API_DEFAULT));
     $headers = array('Content-Type' => 'application/json');
     $secret = get_option(OSINTLAB_REPORT_SECRET_OPTION, '');
 
